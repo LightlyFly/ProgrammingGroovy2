@@ -2,7 +2,8 @@
  * Created by epierce on 12/16/13.
  */
 
-lst = [1,3,4,1,8,9,2,6]
+// Lists
+def lst = [1,3,4,1,8,9,2,6]
 assert lst == [1,3,4,1,8,9,2,6]
 assert lst.getClass().name == 'java.util.ArrayList'
 
@@ -20,6 +21,7 @@ println subLst.dump()
 subLst[0] = 55
 assert lst == [1,3,55,1,8,9,2,6]
 
+// each
 lst = [1,3,4,1,8,9,2,6]
 lst.each { println it }
 lst.eachWithIndex{ int entry, int i -> println "$i : $entry" }
@@ -37,24 +39,79 @@ lst.each {
 assert doubled == [2,6,8,2,16,18,4,12]
 assert doubled2 == [2,6,8,2,16,18,4,12]
 
+// collect
 // collects the return values into a collection and returns it; there's an implicit return
 assert lst.collect { it * 2 } == [2,6,8,2,16,18,4,12]
 
-lst2 = [4,3,1,2,4,1,8,9,2,6]
-assert lst2.find { it == 2 } == 2
-assert !lst2.find { it == 42 }
-assert lst2.find { it == 42 } == null
-assert lst2.find { it > 4 } == 8
-assert lst2.findAll { it > 4 } == [8,9,6]
-assert lst2.findAll { it == 2 } == [2,2]
-assert lst2.findIndexOf { it == 2 } == 3
+// find
+lst = [4,3,1,2,4,1,8,9,2,6]
+assert lst.find { it == 2 } == 2
+assert !lst.find { it == 42 }
+assert lst.find { it == 42 } == null
+assert lst.find { it > 4 } == 8
+assert lst.findAll { it > 4 } == [8,9,6]
+assert lst.findAll { it == 2 } == [2,2]
+assert lst.findIndexOf { it == 2 } == 3
 
-lst3 = ['Programming', 'In', 'Groovy']
+//
+lst = ['Programming', 'In', 'Groovy']
 count = 0
-lst3.each { count += it.size() }
+lst.each { count += it.size() }
 assert count == 19
 
+// sum
 assert [9,1,8,2,7,3].sum() == 30
-assert lst3.collect { it.size() }.sum() == 19
+assert lst.collect { it.size() }.sum() == 19
 
-println lst3.inject(0) { carryOver, element -> carryOver + element.size() } // 3 iterations: 0+11; 11+2; 13+6
+// inject
+assert lst.inject(0) { carryOver, element -> carryOver + element.size() } == 19 // 3 iterations: 0+11; 11+2; 13+6
+
+// join
+assert lst.join( ' ' ) == 'Programming In Groovy'
+lst[0] = ['Be', 'Productive']
+assert lst == [['Be', 'Productive'], 'In', 'Groovy']
+
+// flatten
+lst = lst.flatten()
+assert lst == ['Be', 'Productive', 'In', 'Groovy']
+assert lst - ['Productive', 'In', 'Non-existent'] == ['Be', 'Groovy']
+
+// * = the spread operator
+assert lst*.size() == [2,10,2,6]
+assert lst.collect() { it.size() } == [2,10,2,6] // same
+
+// size of arrayList must
+def words(a,b,c,d){
+    "$a $b $c $d"
+}
+// more spread operator usage
+assert words(*lst) == 'Be Productive In Groovy'
+
+// Maps
+def langs = ['C++' : 'Stroustrup', 'Java' : 'Gosling', 'Lisp' : 'McCarthy']
+assert langs.getClass().name == 'java.util.LinkedHashMap'
+assert langs.Java == 'Gosling'
+assert langs['C++'] == 'Stroustrup'
+assert langs.'C++' == 'Stroustrup'
+
+// each
+langs = ['C++' : 'Stroustrup', Java : 'Gosling', Lisp : 'McCarthy']
+langs.each { entry -> println "$entry.key was written by $entry.value" }
+// langs.each { language, author -> println "$language was written by $author" }    // same
+
+// collect
+assert langs.collect { language, author -> language.replaceAll( '[+]', 'P')}  == ['CPP', 'Java', 'Lisp']
+
+// find
+// TODO: why doesn't this return a regular Map  (i.e., [Java:'Gosling'] )?  What is a java.util.LinkedHashMap$Entry exactly?
+entry = langs.find {language, author -> language.size() > 3} // == 'Java=Gosling'
+assert entry.key == 'Java'
+assert entry.value == 'Gosling'
+// findAll
+assert langs.findAll {language, author -> language.size() > 3} == [Java:'Gosling', Lisp:'McCarthy']
+
+// any
+assert langs.any { language, author -> language =~ "[^A-Za-z]"} == true     // Does *any* language contain a nonalphabetic character?
+
+// every
+assert langs.every { language, author -> language =~ "[^A-Za-z]"} == false  // Does *every* language contain a nonalphabetic character?
