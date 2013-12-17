@@ -115,3 +115,10 @@ assert langs.any { language, author -> language =~ "[^A-Za-z]"} == true     // D
 
 // every
 assert langs.every { language, author -> language =~ "[^A-Za-z]"} == false  // Does *every* language contain a nonalphabetic character?
+
+// groupBy
+friends = [briang:'Brian Goetz', brians:'Brian Sletten', davidb:'David Bock', davidg:'David Geary',scottd:'Scott Davis',scottl:'Scott Leberknight',stuarth:'Stuart Halloway']
+groupByFirstName = friends.groupBy { it.value.split(' ')[0] }
+groupByFirstName.each { firstName, buddies ->
+    println "$firstName : ${ buddies.collect { key, fullName -> fullName }.join(', ')}"
+}
