@@ -111,28 +111,22 @@ assert entry.value == 'Gosling'
 assert langs.findAll {language, author -> language.size() > 3} == [Java:'Gosling', Lisp:'McCarthy']
 
 // any
-assert langs.any { language, author -> language =~ "[^A-Za-z]"} == true     // Does *any* language contain a nonalphabetic character?
+assert langs.any { language, author -> language =~ "[^A-Za-z]"} == true     // Does *any* language contain a non-alphabetic character?
 
 // every
-assert langs.every { language, author -> language =~ "[^A-Za-z]"} == false  // Does *every* language contain a nonalphabetic character?
+assert langs.every { language, author -> language =~ "[^A-Za-z]"} == false  // Does *every* language contain a non-alphabetic character?
 
 // groupBy
 println 'groupBy'
 friends = [briang:'Brian Goetz', brians:'Brian Sletten', davidb:'David Bock', davidg:'David Geary',scottd:'Scott Davis',scottl:'Scott Leberknight',stuarth:'Stuart Halloway']
 groupByFirstName = friends.groupBy { it.value.split(' ')[0] }
-
-test = [ David : {myKey1:'hello', myKey2:'bye'}]
-println test.dump()
-
-// test = [David : {davidb:'David Bock', davidg:'David Geary'}, Brian:{briang:'Brian Goetz', brians:'Brian Sletten'}, Stuart:{stuarth='Stuart Halloway'},Scott:{scottd:'Scott Davis', scottl:'Scott Leberknight'}]
-
+assert groupByFirstName == [Brian:[briang:'Brian Goetz', brians:'Brian Sletten'], David:[davidb:'David Bock', davidg:'David Geary'], Scott:[scottd:'Scott Davis', scottl:'Scott Leberknight'], Stuart:[stuarth:'Stuart Halloway']]
 assert groupByFirstName.getClass().name == 'java.util.LinkedHashMap'
+
 groupByFirstName.each { firstName, buddies ->
     println "$firstName"
     println "$buddies"
 }
-
-println groupByFirstName.dump()
 
 groupByFirstName.each { firstName, buddies ->
     println "$firstName : ${ buddies.collect { key, fullName -> fullName }.join(', ')}"
