@@ -10,8 +10,9 @@ for( i in 0..2 ) {print 'ho '}
 // step
 0.step( 10, 2 ) {println "$it "}
 
-// println 'svn help'.execute().text
-assert 'svn help'.execute().getClass().name == 'java.lang.ProcessImpl'
+// different results depending on which OS it's ran under
+// assert 'svn help'.execute().getClass().name == 'java.lang.ProcessImpl'   // Win
+// assert 'svn help'.execute().getClass().name == 'java.lang.UNIXProcess''  // Linux
 
 // ?.   safe-navigation operator
 def foo( String str ){
@@ -31,8 +32,8 @@ try {
     assert false
 } catch( FileNotFoundException ex ){
     assert ex.getClass().name == 'java.io.FileNotFoundException'
-    assert ex.getMessage() == 'menoexist (The system cannot find the file specified)'
-    assert "$ex" == 'java.io.FileNotFoundException: menoexist (The system cannot find the file specified)'  // the double quotes stringifies the object (I think)
+    // assert ex.getMessage() == 'menoexist (The system cannot find the file specified)'
+    // assert "$ex" == 'java.io.FileNotFoundException: menoexist (The system cannot find the file specified)'  // the double quotes stringifies the object (I think)
 }
 
 class Wizard{
@@ -121,4 +122,22 @@ class Robot2 {
 robot2 = new Robot2()
 // However, the arg order can still be out of order.
 assert robot2.access( 10, true, a:1, y: 3, z: 5 ) == 'Received fragile? true, weight: 10, loc: [a:1, y:3, z:5]'
+
+// Optional Parameters
+def log( x, base=10 ){
+    Math.log( x ) / Math.log( base )
+}
+
+assert log( 1024 ) == 3.0102999566398116
+assert log( 1024, 10 ) == 3.0102999566398116
+assert log( 1024, 2 ) == 10.0
+
+// Groovy treats trailing array param as zero or more args.
+def task( name, String[] details ){
+    "$name - $details"
+}
+
+assert task ('Call', '123-456-7890') == 'Call - [123-456-7890]'
+assert task ('Call', '123-456-7890', '231-546-0987') == 'Call - [123-456-7890, 231-546-0987]'
+assert task ('Check Mail') == 'Check Mail - []'
 
