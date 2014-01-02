@@ -141,3 +141,86 @@ assert task ('Call', '123-456-7890') == 'Call - [123-456-7890]'
 assert task ('Call', '123-456-7890', '231-546-0987') == 'Call - [123-456-7890, 231-546-0987]'
 assert task ('Check Mail') == 'Check Mail - []'
 
+// Multiple Assignments
+def splitName( fullName ) { fullName.split(' ') }
+def ( firstName, lastName ) = splitName( 'James Bond' )
+assert firstName == 'James'
+assert lastName == 'Bond'
+
+//  swap vars
+( firstName, lastName ) = [ lastName, firstName ]
+assert firstName == 'Bond'
+assert lastName == 'James'
+
+def (cat, mouse) = ['Tom','Jerry','Spike','Tyke']
+assert cat == 'Tom'
+assert mouse == 'Jerry'
+
+def (first, second, third ) = ['Tom','Jerry']
+assert first == 'Tom'
+assert second == 'Jerry'
+assert third == null
+
+// Boolean eval
+def str = 'hello'
+if( str ){
+    assert true
+} else {
+    assert false
+}
+
+var1 = null
+assert !var1
+var2 = [1,2,3]
+assert var2
+var3 = []
+assert !var3
+
+// operator overload
+def charCol1 = []
+for( ch = 'a'; ch < 'd'; ch++ ){
+    charCol1 << ch
+}
+
+assert charCol1 == ['a','b','c']
+
+def charCol2 = []
+for( ch in 'a'..'c'){
+    charCol2 << ch
+}
+
+assert charCol2 == ['a','b','c']
+
+lst = ['Hello']
+lst << 'there'
+assert lst == ['Hello','there']
+
+class ComplexNumber{
+    def real, imaginary
+
+    def plus(other){
+        new ComplexNumber( real: real + other.real, imaginary: imaginary + other.imaginary )
+    }
+
+    String toString(){ "$real ${imaginary > 0 ? '+' : ''} ${imaginary}i"}
+}
+c1 = new ComplexNumber( real: 1, imaginary: 2)
+c2 = new ComplexNumber( real: 4, imaginary: 1)
+assert (c1 + c2).toString() == '5 + 3i'
+println c1 + c2
+
+// for-each
+String[] greetings = ['Hello','Hi','Howdy']
+def greetingsCatch1 = []
+for( String greet : greetings){     // must provide type or 'def' when doing the Java5ish Groovy way
+    greetingsCatch1 << greet
+}
+assert greetingsCatch1 == ['Hello','Hi','Howdy']
+
+def greetingsCatch2 = []
+for( greet in greetings ){     // Groovier way; don't need to declare the type or 'def'
+    greetingsCatch2 << greet
+}
+assert greetingsCatch2 == ['Hello','Hi','Howdy']
+
+// enum
