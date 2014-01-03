@@ -224,3 +224,47 @@ for( greet in greetings ){     // Groovier way; don't need to declare the type o
 assert greetingsCatch2 == ['Hello','Hi','Howdy']
 
 // enum
+enum CoffeeSize { SHORT, SMALL, MEDIUM, LARGE, MUG }
+def orderCoffee( size ){
+    msg = "coffee order received for size $size: "
+    switch( size ){
+        case [CoffeeSize.SHORT, CoffeeSize.SMALL]:
+            msg += "you're health conscious"
+            break
+        case CoffeeSize.MEDIUM..CoffeeSize.LARGE:
+            msg += 'you gotta be a programmer'
+            break
+        case CoffeeSize.MUG:
+            msg += 'you should try Caffeine IV'
+            break
+    }
+    msg
+}
+
+assert orderCoffee( CoffeeSize.SMALL ) == 'coffee order received for size SMALL: you\'re health conscious'
+assert orderCoffee( CoffeeSize.LARGE ) == 'coffee order received for size LARGE: you gotta be a programmer'
+
+for( size in CoffeeSize.values() ){
+    print "$size "
+}
+
+enum Methodologies{
+    Evo(5),
+    XP(21),
+    Scrum(30);
+
+    final int daysInIteration
+
+    Methodologies( days ){ daysInIteration = days }
+
+    def iterationDetails(){
+        "${this} recommends $daysInIteration days for iteration"
+    }
+}
+
+for( methodology in Methodologies.values() ){
+    println methodology.iterationDetails()
+}
+
+assert Methodologies.Evo.iterationDetails() == 'Evo recommends 5 days for iteration'
+assert Methodologies.Scrum.iterationDetails() == 'Scrum recommends 30 days for iteration'
