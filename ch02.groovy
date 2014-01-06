@@ -23,7 +23,7 @@ assert foo( 'evil' ) == 'live'
 assert foo( null ) == null
 
 // exception handling
-def openFile( fileName ){
+def openFile( String fileName ){
     new FileInputStream( fileName )
 }
 
@@ -45,8 +45,8 @@ class Wizard{
 }
 
 Wizard.learn( 'hapula' )
-    .learn( 'bopula' )
-    .learn( 'crapula' )
+        .learn( 'bopula' )
+        .learn( 'crapula' )
 
 class Car {
     def miles = 0
@@ -86,7 +86,7 @@ assert car2.miles == 10
 try {
     car2.year = 1984
     assert false
-} catch( groovy.lang.ReadOnlyPropertyException ex ) {
+} catch( ReadOnlyPropertyException ex ) {
     assert ex.message == 'Cannot set readonly property: year for class: Car2'
 }
 
@@ -268,3 +268,102 @@ for( methodology in Methodologies.values() ){
 
 assert Methodologies.Evo.iterationDetails() == 'Evo recommends 5 days for iteration'
 assert Methodologies.Scrum.iterationDetails() == 'Scrum recommends 30 days for iteration'
+
+// varargs
+def receiveVarArgs( int a, int... b){
+    "You passed $a and $b"
+}
+
+def receiveArray( int a, int[] b){
+    "You passed $a and $b"
+}
+
+assert receiveVarArgs(1,2,3,4,5) == "You passed 1 and [2, 3, 4, 5]"
+assert receiveArray(1,2,3,4,5) == "You passed 1 and [2, 3, 4, 5]"
+assert receiveVarArgs( 1, [2,3,4,5] as int[]) == "You passed 1 and [2, 3, 4, 5]"
+assert receiveArray( 1, [2,3,4,5]  as int[]) == "You passed 1 and [2, 3, 4, 5]"
+
+assert ([1,2,3]).getClass().name == 'java.util.ArrayList'
+assert ([1,2,3] as int[]).getClass().name == '[I'       // TODO: wth?
+
+// annotations
+
+// Static Import
+import java.lang.management.ManagementPermission
+
+import static Math.random as rand
+import groovy.lang.ExpandoMetaClass as EMC
+
+double value = rand()
+def metaClass = new EMC(Integer)
+def metaClass2 = new groovy.lang.ExpandoMetaClass(Integer)
+assert metaClass.getClass().name == 'groovy.lang.ExpandoMetaClass'
+assert metaClass2.getClass().name == 'groovy.lang.ExpandoMetaClass'
+
+// Generics
+// @Canonical
+import groovy.transform.*
+
+@Canonical(excludes = "lastName, age")
+class Person{
+    String firstname
+    String lastName
+    int age
+}
+
+def sara = new Person( firstname: 'Sara', lastName: 'Walker', age:49)
+println sara
+assert "$sara" == "Person(Sara)"
+assert sara.toString() == "Person(Sara)"
+
+// @Delegate
+class Worker{
+    def work(){ 'get work done'}
+    def analyze(){ 'analyze...'}
+    def writeReport(){ 'get report written'}
+}
+class Expert{
+    def analyze(){ 'expert analyze...'}
+}
+class Manager{
+    // If we switch the order of these two, the Worker's analyze fn will be used.
+    @Delegate Expert expert = new Expert()
+    @Delegate Worker worker = new Worker()
+}
+def bernie = new Manager()
+assert bernie.analyze() == 'expert analyze...'
+assert bernie.work() == 'get work done'
+assert bernie.writeReport() == 'get report written'
+
+// @Immutable
+@Immutable
+class CreditCard{
+    String cardNumber
+    int creditLimit
+}
+
+def cc = new CreditCard('4000-1111-2222-3333',1000)
+assert "$cc" == 'CreditCard(4000-1111-2222-3333, 1000)'
+
+// @Lazy
+class Heavy{
+    def size = 10
+    Heavy(){ println "Creating Heavy with $size"}
+}
+
+class AsNeeded {
+    def value
+
+    @Lazy Heavy heavy1 = new Heavy()
+
+    // TODO: what's up w/the {}() syntax here?  Seem to work the same without it (i.e., just new Heavy( size: value)
+    @Lazy Heavy heavy2 = { new Heavy( size: value ) }() // TODO: Is this the same as instantiating via an implicit constructor and then calling an implicit setSize method?
+
+
+    AsNeeded(){ println 'Created AsNeeded'}
+}
+
+def asNeeded  = new AsNeeded( value: 1000)
+println asNeeded.heavy1.size    // heavy1 instantiated here
+println asNeeded.heavy1.size
+println asNeeded.heavy2.size    // TODO: heavy2 instantiated here (via an implicit default constructor?), then assigned 1000 (via an implicit setter).
