@@ -59,7 +59,7 @@ def totalSelectValues( n, closure ){
 
 assert totalSelectValues( 10 ){ it % 2 == 0 } == 30
 
-def isOdd = { it % 2 != 0}
+def isOdd = { it % 2 != 0 }
 assert totalSelectValues( 10, isOdd ) == 25
 
 
@@ -87,3 +87,28 @@ assert tellFortunate() { Date date, String fortune ->   // types are optional
 } == "Fortune for Thu Sep 20 00:00:00 CDT 2012 is 'Your day is filled with ceremony"
 
 // closures as resource cleanup
+new FileWriter('output.txt').withWriter { writer -> writer.write('a') }
+
+class Resource {
+    def open() { print 'open... '}
+    def close() { print 'close... '}
+    def read() { print 'read... '}
+    def write() { print 'write... '}
+
+    def static use( closure ){
+        def r = new Resource()
+        try {
+            r.open()        // ensure we 'open' the resource
+            closure( r )
+        } finally {
+            r.close()       // ensure we 'close' the resource
+        }
+    }
+}
+
+Resource.use { res ->
+    res.read()
+    res.write()
+}
+
+// closures and co-routines
