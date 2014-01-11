@@ -284,13 +284,11 @@ assert receiveVarArgs( 1, [2,3,4,5] as int[]) == "You passed 1 and [2, 3, 4, 5]"
 assert receiveArray( 1, [2,3,4,5]  as int[]) == "You passed 1 and [2, 3, 4, 5]"
 
 assert ([1,2,3]).getClass().name == 'java.util.ArrayList'
-assert ([1,2,3] as int[]).getClass().name == '[I'       // TODO: wth?
+assert ([1,2,3] as int[]).getClass().name == '[I'       // [I is int[]
 
 // annotations
 
 // Static Import
-import java.lang.management.ManagementPermission
-
 import static Math.random as rand
 import groovy.lang.ExpandoMetaClass as EMC
 
@@ -306,12 +304,12 @@ import groovy.transform.*
 
 @Canonical(excludes = "lastName, age")
 class Person{
-    String firstname
+    String firstName
     String lastName
     int age
 }
 
-def sara = new Person( firstname: 'Sara', lastName: 'Walker', age:49)
+def sara = new Person( firstName: 'Sara', lastName: 'Walker', age:49)
 println sara
 assert "$sara" == "Person(Sara)"
 assert sara.toString() == "Person(Sara)"
@@ -367,3 +365,111 @@ def asNeeded  = new AsNeeded( value: 1000)
 println asNeeded.heavy1.size    // heavy1 instantiated here
 println asNeeded.heavy1.size
 println asNeeded.heavy2.size    // TODO: heavy2 instantiated here (via an implicit default constructor?), then assigned 1000 (via an implicit setter).
+
+// @Newify
+@Newify([Person, CreditCard])
+def fluentCreate(){
+    println Person.new( firstName: "John", lastName: "Doe", age: 20 )   // Ruby style (?)
+    println Person( firstName: "John", lastName: "Doe", age: 20 )       // Python style instantiation w/o new (?)
+    println CreditCard( "1234-5678-1234-5678", 2000)                    // Python style instantiation w/o new (?)
+}
+
+fluentCreate()
+
+// @Singleton
+@Singleton( lazy = true, strict = false )
+class TheUnique{
+    TheUnique(){ println 'Instance created' }
+
+    def hello() { println 'hello' }
+}
+
+println 'Accessing TheUnique'
+TheUnique.instance.hello()      // with lazy=true; Singleton waits to instantiate till first accessed.
+TheUnique.instance.hello()
+
+// Gotchas
+// equals
+str1 = 'hello'
+str2 = str1
+str3 = new String('hello')
+str4 = 'Hello'
+
+assert str == str2
+assert str == str3
+assert str != str4
+
+assert str1.is( str2 )
+assert ! str1.is( str3 )
+assert ! str1.is( str4 )
+
+
+class A{
+    boolean equals(other){
+        println 'equals called'
+        false
+    }
+}
+
+class B implements Comparable{
+    boolean equals(other){
+        println 'equals called'
+        false
+    }
+
+    int compareTo( other ){
+        println 'compareTo called'
+        0
+    }
+}
+
+new A() == new A()  // normally, equals is called when comparing using ==
+new B() == new B()  // but here compareTo is called!  implementing Comparable makes this occur
+
+// type checking
+try {
+    Integer val = 4
+    val = 'hello'
+} catch( e ){
+    assert e.message == "Cannot cast object 'hello' with class 'java.lang.String' to class 'java.lang.Integer'"
+}
+
+try {
+    Integer val2 = 4
+    val2.blah()
+} catch( e ){
+    println e.getMessage()
+}
+
+// prevent closure / inner class confusion
+class Calibrator{
+    Calibrator( calcBlock){
+        print 'using...'
+        calcBlock()     // execute closure
+    }
+}
+
+// make sure to stick the closure inside parens to avoid inner class creation confusion by Groovy
+new Calibrator({ println 'the calc provided' })
+def calc = { println 'another calc provided'}
+new Calibrator(  calc )
+
+
+// semicolon!
+
+class Semi{
+    def val = 3;    // needed here for next block
+
+    // "instance initializer" (?)
+    {
+        println 'instance initializer called'
+    }
+}
+
+println new Semi()
+
+int[] arr = [1,2,3]
+def arr2 = [4,5,6]
+
+assert arr.getClass().name == '[I'      // is a int[]
+assert arr2.getClass().name == 'java.util.ArrayList'
