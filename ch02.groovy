@@ -377,7 +377,7 @@ def fluentCreate(){
 fluentCreate()
 
 // @Singleton
-@Singleton( lazy = true, strict = false )
+@Singleton( lazy = true )
 class TheUnique{
     TheUnique(){ println 'Instance created' }
 
@@ -473,3 +473,4 @@ def arr2 = [4,5,6]
 
 assert arr.getClass().name == '[I'      // is a int[]
 assert arr2.getClass().name == 'java.util.ArrayList'
+

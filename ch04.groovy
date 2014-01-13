@@ -79,10 +79,10 @@ assert eq1.simlulate() == 'Calculator 1'
 assert eq2.simlulate() == 'Calculator 2'
 
 // Passing params to closures
-def tellFortunate( closure ){
+def tellFortune( closure ){
     closure new Date( '09/20/2012'), 'Your day is filled with ceremony'
 }
-assert tellFortunate() { Date date, String fortune ->   // types are optional
+assert tellFortune() { Date date, String fortune ->   // types are optional
     "Fortune for ${date} is '${fortune}"
 } == "Fortune for Thu Sep 20 00:00:00 CDT 2012 is 'Your day is filled with ceremony"
 
@@ -112,3 +112,34 @@ Resource.use { res ->
 }
 
 // closures and co-routines
+def iterate(n, closure) {
+    1.upto(n){
+        println "In iterate with value ${it}"
+        closure( it )
+    }
+}
+
+println 'Calling iterate'
+total = 0
+iterate(4){
+    total += it
+    println "In closure total so far is ${total}"
+}
+
+println 'Done'
+
+// curried closure
+def tellFortunes(closure) {
+    Date date = new Date('09/20/2012')
+    postFortune = closure.curry(date)   // created an alias for closure arg called postFortune
+    postFortune 'Your day is filled with ceremony'
+    postFortune "They're features, not bugs"
+
+    superPostFortune = closure.curry( date, "fortunes are for Mojo!")  // curry both args
+    superPostFortune()                              // now call closure w/no args
+}
+
+tellFortunes() { date, fortune ->
+    println "Fortune for ${date} is '${fortune}'"
+
+}
