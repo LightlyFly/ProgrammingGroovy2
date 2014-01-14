@@ -49,3 +49,28 @@ assert "This is a simple string".getClass().name == 'java.lang.String'
 assert "This is a simple string".getClass().superclass.name == 'java.lang.Object'
 
 // Laxy Eval
+price = 684.71
+company = 'Google'
+quote = "Today $company stock closed at $price"
+println quote
+
+stocks = [Apple: 663.01, Microsoft: 30.95]
+
+// The quote var is NOT updated although you might think it will be here.
+stocks.each { key, value ->
+    company = key   // merely pointing 'company' to another reference
+    price = value   // merely pointing 'company' to another reference
+    println quote   // still points to the original references; Google, etc.
+                    // quote GString is not reevaluated.
+}
+
+companyClosure = { it.write(company) }
+priceClosure = { it.write("$price") }
+quote = "Today ${companyClosure} stock closed at ${priceClosure}"   // these closures cause a reevaluation to occur
+
+stocks.each { key, value ->
+    company = key
+    price = value
+    println quote
+}
+

@@ -143,3 +143,4 @@ tellFortunes() { date, fortune ->
     println "Fortune for ${date} is '${fortune}'"
 
 }
+

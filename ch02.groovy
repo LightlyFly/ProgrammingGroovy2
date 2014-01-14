@@ -377,7 +377,7 @@ def fluentCreate(){
 fluentCreate()
 
 // @Singleton
-@Singleton( lazy = true )
+@Singleton( lazy = true, strict = false )
 class TheUnique{
     TheUnique(){ println 'Instance created' }
 
