@@ -74,3 +74,25 @@ stocks.each { key, value ->
     println quote
 }
 
+// a little more elegant
+quote = "Today ${-> company} stock closed at ${-> price}"
+
+stocks.each { key, value ->
+    company = key
+    price = value
+    println quote
+}
+
+// multiline strings
+memo = '''super
+long
+string
+'''
+
+message = """here is
+our latest value:
+\$$val"""
+
+println message
+
+langs = ['C++': 'Stroustrup', 'Java': 'Gosling', 'List': 'McCarthy']
