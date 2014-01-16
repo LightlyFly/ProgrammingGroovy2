@@ -55,7 +55,7 @@ class Car {
     Car( theYear ) { year = theYear }
 }
 
-Car car = new Car(2008)
+Car3 car = new Car3(2008)
 car.miles = 25  // goes through implicitly created setMiles fn
 assert car.year == 2008
 
