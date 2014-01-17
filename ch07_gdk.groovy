@@ -76,3 +76,25 @@ properties.each { name ->
 car3[properties[1]] = 100
 
 println "fuelLevel now is ${car3.fuelLevel}"
+
+// Indirect Method
+class Person2 {
+    def walk() {
+        println 'walking.'
+    }
+
+    def walk(int miles) {
+        println "walking $miles miles..."
+    }
+
+    def walk(int miles, String where) {
+        println "walking $miles miles $where..."
+    }
+}
+
+peter = new Person2()
+peter.invokeMethod("walk", null)
+peter.invokeMethod("walk", 10)
+peter.invokeMethod("walk", [2,'uphill'] as Object[])
+
+// Array
