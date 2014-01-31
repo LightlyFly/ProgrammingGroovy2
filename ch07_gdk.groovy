@@ -70,31 +70,76 @@ car3 = new Car3(fuelLevel: 80, miles: 25)
 properties = ['miles', 'fuelLevel']     // pretend this came from user input
 
 properties.each { name ->
-    println "$name = ${car3[ name ]}"
+    if( name == 'miles' ){
+        assert "$name = ${car3[ name ]}" == 'miles = 25'
+    } else {
+        assert "$name = ${car3[ name ]}" == 'fuelLevel = 80'
+    }
 }
 
 car3[properties[1]] = 100
-
-println "fuelLevel now is ${car3.fuelLevel}"
+assert "fuelLevel now is ${car3.fuelLevel}" == 'fuelLevel now is 100'
 
 // Indirect Method
 class Person2 {
     def walk() {
-        println 'walking.'
+        'walking.'
     }
 
     def walk(int miles) {
-        println "walking $miles miles..."
+        "walking $miles miles..."
     }
 
     def walk(int miles, String where) {
-        println "walking $miles miles $where..."
+        "walking $miles miles $where..."
     }
 }
 
 peter = new Person2()
-peter.invokeMethod("walk", null)
-peter.invokeMethod("walk", 10)
-peter.invokeMethod("walk", [2,'uphill'] as Object[])
+assert peter.invokeMethod("walk", null) == 'walking.'
+assert peter.invokeMethod("walk", 10) == 'walking 10 miles...'
+assert peter.invokeMethod("walk", [2,'uphill'] as Object[]) == 'walking 2 miles uphill...'
 
 // Array
+int[] arr = [1,2,3,4,5,6]
+assert arr[2..4] == [3,4,5]
+
+// java.lang Extensions
+process = 'wc'.execute()
+
+process.out.withWriter {        // withWriter lets us write to the output stream, and it flushes and closes the stream at closure end.
+    // Send input to process
+    it << 'Let the world know...\n'
+    it << 'Groovy Rocks!\n'
+}
+
+// Read output from process
+assert process.in.text == '      2       6      36\n' // two lines; six words; 36 chars
+    // or println process.text
+
+
+String[] command = ['groovy','-e','"print \'Groovy\'"']
+println "Calling ${command.join(' ')}"
+assert command.execute().text == 'Groovy'
+
+// Thread start
+def printThreadInfo(msg) {
+    def currentThread = Thread.currentThread()
+    println "$msg Thread is ${currentThread}. Daemon? ${currentThread.isDaemon()}"
+}
+
+printThreadInfo 'Main'
+
+Thread.start {
+    printThreadInfo "Started"
+    sleep(1000) { println 'Interrupted' }
+    println 'Finished Started'
+}
+
+sleep 1000
+
+Thread.startDaemon {
+    printThreadInfo 'Started Daemon'
+    sleep 2000 { println 'Interrupted' }
+    println 'Finished Started Daemon'       // Will not get here
+}
