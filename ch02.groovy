@@ -55,7 +55,7 @@ class Car {
     Car( theYear ) { year = theYear }
 }
 
-Car car = new Car(2008)
+Car3 car = new Car3(2008)
 car.miles = 25  // goes through implicitly created setMiles fn
 assert car.year == 2008
 
@@ -377,9 +377,9 @@ def fluentCreate(){
 fluentCreate()
 
 // @Singleton
-@Singleton( lazy = true )
-class TheUnique{
-    TheUnique(){ println 'Instance created' }
+@Singleton(lazy = true, strict = false)
+class TheUnique {
+    TheUnique() { println 'Instance created' }
 
     def hello() { println 'hello' }
 }

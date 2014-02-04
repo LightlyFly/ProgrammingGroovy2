@@ -95,4 +95,61 @@ our latest value:
 
 println message
 
+// create XML
 langs = ['C++': 'Stroustrup', 'Java': 'Gosling', 'List': 'McCarthy']
+content = ''
+
+langs.each { language, author ->
+    fragment = """
+        <language name="${language}">
+            <author>${author}</author>
+        </language>
+    """
+
+    content += fragment
+}
+
+xml = "<languages>${content}</languages>"
+println xml
+
+// convenience
+str = "It's a rainy day in Seattle"
+
+str -= "rainy "
+assert str == "It's a day in Seattle"
+
+for (str in 'held'..'helm') {
+    print "${str} "
+}
+println ''
+
+// RegEx
+obj = ~"hello"
+assert obj.getClass().name == 'java.util.regex.Pattern'
+
+// =~ is partial RegEx match; ==~ is an exact RegEx match
+pattern = ~"(G|g)roovy"
+text = 'Groovy is Hip'
+
+if (text =~ pattern) {
+    assert true     // partial match
+} else {
+    assert false
+}
+
+if (text ==~ pattern) {
+    assert false
+} else {
+    assert true     // not a partial match
+}
+
+matcher = 'Groovy is groovy' =~ /(G|g)roovy/
+assert matcher.size() == 2
+assert matcher[0][0] == 'Groovy'
+assert matcher[0][1] == 'G'
+assert matcher[1][0] == 'groovy'
+assert matcher[1][1] == 'g'
+
+str = 'Groovy is groovy, really groovy'
+assert (str =~ /groovy/).replaceAll('hip') == 'Groovy is hip, really hip'
+assert str.replaceAll( ~/groovy/, 'nasty') == 'Groovy is nasty, really nasty'
