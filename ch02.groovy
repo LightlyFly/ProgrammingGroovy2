@@ -106,7 +106,7 @@ class Robot {
         "Received fragile? $fragile, weight: $weight, loc: $location"
     }
 }
-robot = new Robot( type: 'arm', width: 10, height: 40)
+robot = new Robot3( type: 'arm', width: 10, height: 40)
 assert "$robot.type, $robot.height, $robot.width" == 'arm, 40, 10'
 assert robot.access( a:30, y: 20, z: 10, 50, true ) == 'Received fragile? true, weight: 50, loc: [a:30, y:20, z:10]'    // Here all the name-value args go in to 'location' param as a collection array (see next comment)
 assert robot.access( 50, true, a:30, y: 20, z: 10 ) == 'Received fragile? true, weight: 50, loc: [a:30, y:20, z:10]'    // If arg count doesn't match method signature AND the excess are name-value pairs, Groovy groups this as a collection into the FIRST parameter... always.  So Grroovy plays around the arg order in this case.
@@ -377,7 +377,7 @@ def fluentCreate(){
 fluentCreate()
 
 // @Singleton
-@Singleton(lazy = true)
+@Singleton(lazy = true, strict=false)
 class TheUnique {
     TheUnique() { println 'Instance created' }
 
