@@ -152,6 +152,7 @@ class TodoBuilder {
     }
 }
 
+// BuilderSupport
 bldr = new TodoBuilderWithSupport()
 
 bldr.build {
@@ -241,7 +242,7 @@ class TodoBuilderWithSupport extends BuilderSupport {
 }
 
 
-// RobotBuilder
+// FactoryBuilderSupport
 def blder = new RobotBuilder()
 
 def robot = blder.robot('iRobot') {
@@ -253,8 +254,8 @@ def robot = blder.robot('iRobot') {
 robot.go()
 
 class RobotBuilder extends FactoryBuilderSupport {
-    {
-        registerFactory( 'robot', new RobotFactory() )
+    {   // what is this block all about?
+        registerFactory( 'robot', new RobotFactory() )          // these all become actions (methods) off the RobotBuilder object.
         registerFactory( 'forward', new ForwardMoveFactory() )
         registerFactory( 'left', new LeftTurnFactory() )
     };
